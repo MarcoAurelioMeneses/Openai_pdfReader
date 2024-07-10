@@ -1,42 +1,41 @@
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
-from leitura_docs import *
+from leituradocs import *
 
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def buscar_resposta_na_openai(pergunta, contexto):
-    
-    try:    
-        prompt= f"""Analise o documento fornecido e em seguida responda a 
-        {pergunta} com base em seu conhecimento do 
-        {contexto}"""
+cliente = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-        resposta = client.chat.completions.create(
-            messages=[{
-                "role":"system",
-                "content": prompt
-            },
-            {
-                "role":"user",
-                "content": pergunta
-            }
-            ],
-            model="gpt-3.5-turbo",
-            temperature=1,
-            max_tokens=300,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0,
-        )
-        return resposta
-    except Exception as e:
-        print("erro ", e)
+contexto = carrega("docs/assembleia.txt")
 
-# Exemplo de uso
-pergunta_do_usuario = "Quando ocorreu essa reunião?"
-resposta = buscar_resposta_na_openai(pergunta_do_usuario, pdf_text)
 
-print("Resposta encontrada:", resposta)
+prompt_sistema = f"""
+    Você é um assistente de escritório e sua princiapl tarefa é gerar atas.
+    A reunião em questão está especificada do contexto abaixo.
+    Leia os documentos e gere a ata da reunião, baseado nos eventos que aconteceram.
+    {contexto}
+"""
+
+print("Informe sua dúvida ")
+prompt_usuario = input()
+
+resposta = cliente.chat.completions.create(
+    messages=
+    [
+        {
+            "role": "system",
+            "content" : prompt_sistema
+        },
+        {
+            "role": "user",
+            "content" : prompt_usuario
+        }
+    ],
+    model="gpt-3.5-turbo",
+    temperature=0.5,
+    frequency_penalty=1.0
+)
+
+print(resposta.choices[0].message.content)

@@ -9,4 +9,4 @@ def read_pdf(file_path):
     doc.close()
     return text
 
-pdf_text = read_pdf('docs/ata_teste.pdf')
+pdf_text = read_pdf('docs/livreto_contos.pdf')
